@@ -1,9 +1,11 @@
-// Variables
+// Use either "const pluginVersion =" or "const plugin_version =" in .js file
+// eg: const pluginVersion = "1.0.0"
 
+// Variables
 const pluginVersion = '1.0.0';
 const pluginName = "My Plugin";
 const pluginHomepageUrl = "https://github.com/Plugin_URL";
-const pluginUpdateUrl = "https://example.com/version.txt";
+const pluginUpdateUrl = "https://example.com/file.js";
 const pluginSetupOnlyNotify = true;
 const CHECK_FOR_UPDATES = true;
 
@@ -25,9 +27,23 @@ function checkUpdate(setupOnly, pluginVersion, pluginName, urlUpdateLink, urlFet
             }
 
             const text = await response.text();
-            const firstLine = text.split('\n')[0]; // Extract first line
+            const lines = text.split('\n');
 
-            const version = firstLine;
+            let version;
+
+            if (lines.length > 2) {
+                const versionLine = lines.find(line => line.includes("const pluginVersion =") || line.includes("const plugin_version ="));
+                if (versionLine) {
+                    const match = versionLine.match(/const\s+plugin[_vV]ersion\s*=\s*['"]([^'"]+)['"]/);
+                    if (match) {
+                        version = match[1];
+                    }
+                }
+            }
+
+            if (!version) {
+                version = lines[0]; // Fallback to first line
+            }
 
             return version;
         } catch (error) {
@@ -42,7 +58,7 @@ function checkUpdate(setupOnly, pluginVersion, pluginName, urlUpdateLink, urlFet
             if (newVersion !== pluginVersion) {
                 let updateConsoleText = "There is a new version of this plugin available";
                 // Any custom code here
-
+                
                 console.log(`[${pluginName}] ${updateConsoleText}`);
                 setupNotify(pluginVersion, newVersion, pluginName, urlUpdateLink);
             }
