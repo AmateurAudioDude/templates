@@ -42,7 +42,8 @@ function checkUpdate(setupOnly, pluginVersion, pluginName, urlUpdateLink, urlFet
             }
 
             if (!version) {
-                version = lines[0]; // Fallback to first line
+                const firstLine = lines[0].trim();
+                version = /^\d/.test(firstLine) ? firstLine : "Unknown"; // Check if first character is a number
             }
 
             return version;
@@ -86,7 +87,7 @@ function checkUpdate(setupOnly, pluginVersion, pluginName, urlUpdateLink, urlFet
           redDot.style.width = '12px';
           redDot.style.height = '12px';
           redDot.style.borderRadius = '50%';
-          redDot.style.backgroundColor = '#FE0830' || 'var(--color-main-bright)'; // Prefer set colour over theme colour
+          redDot.style.backgroundColor = '#FE0830' || 'var(--color-main-bright)'; // Theme colour set here as placeholder only
           redDot.style.marginLeft = '82px';
           redDot.style.marginTop = '-12px';
 
@@ -95,12 +96,4 @@ function checkUpdate(setupOnly, pluginVersion, pluginName, urlUpdateLink, urlFet
     }
 }
 
-if (CHECK_FOR_UPDATES) {
-    checkUpdate(
-        pluginSetupOnlyNotify,  // Check only in /setup
-        pluginVersion,          // Plugin version (string)
-        pluginName,             // Plugin name
-        pluginHomepageUrl,      // Update link URL
-        pluginUpdateUrl,        // Update check URL
-    );
-}
+if (CHECK_FOR_UPDATES) checkUpdate(pluginSetupOnlyNotify, pluginVersion, pluginName, pluginHomepageUrl, pluginUpdateUrl);
