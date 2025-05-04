@@ -36,7 +36,6 @@ function checkUpdate(setupOnly, pluginVersion, pluginName, urlUpdateLink, urlFet
         }
     }
 
-
     // Check for updates
     fetchFirstLine().then(newVersion => {
         if (newVersion) {
