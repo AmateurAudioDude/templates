@@ -13,8 +13,10 @@ const CHECK_FOR_UPDATES = true;
 
 
 // Function for update notification in /setup
-function checkUpdate(setupOnly, pluginVersion, pluginName, urlUpdateLink, urlFetchLink) {
+function checkUpdate(setupOnly, pluginName, urlUpdateLink, urlFetchLink) {
     if (setupOnly && window.location.pathname !== '/setup') return;
+
+    let pluginVersionCheck = typeof pluginVersion !== 'undefined' ? pluginVersion : typeof plugin_version !== 'undefined' ? plugin_version : typeof PLUGIN_VERSION !== 'undefined' ? PLUGIN_VERSION : 'Unknown';
 
     // Function to check for updates
     async function fetchFirstLine() {
@@ -34,7 +36,7 @@ function checkUpdate(setupOnly, pluginVersion, pluginName, urlUpdateLink, urlFet
             if (lines.length > 2) {
                 const versionLine = lines.find(line => line.includes("const pluginVersion =") || line.includes("const plugin_version =") || line.includes("const PLUGIN_VERSION ="));
                 if (versionLine) {
-                    const match = versionLine.match(/const\s+plugin[_vV]ersion\s*=\s*['"]([^'"]+)['"]/);
+                    const match = versionLine.match(/const\s+(?:pluginVersion|plugin_version|PLUGIN_VERSION)\s*=\s*['"]([^'"]+)['"]/);
                     if (match) {
                         version = match[1];
                     }
@@ -56,22 +58,22 @@ function checkUpdate(setupOnly, pluginVersion, pluginName, urlUpdateLink, urlFet
     // Check for updates
     fetchFirstLine().then(newVersion => {
         if (newVersion) {
-            if (newVersion !== pluginVersion) {
+            if (newVersion !== pluginVersionCheck) {
                 let updateConsoleText = "There is a new version of this plugin available";
                 // Any custom code here
                 
                 console.log(`[${pluginName}] ${updateConsoleText}`);
-                setupNotify(pluginVersion, newVersion, pluginName, urlUpdateLink);
+                setupNotify(pluginVersionCheck, newVersion, pluginName, urlUpdateLink);
             }
         }
     });
 
-    function setupNotify(pluginVersion, newVersion, pluginName, urlUpdateLink) {
+    function setupNotify(pluginVersionCheck, newVersion, pluginName, urlUpdateLink) {
         if (window.location.pathname === '/setup') {
           const pluginSettings = document.getElementById('plugin-settings');
           if (pluginSettings) {
             const currentText = pluginSettings.textContent.trim();
-            const newText = `<a href="${urlUpdateLink}" target="_blank">[${pluginName}] Update available: ${pluginVersion} --> ${newVersion}</a><br>`;
+            const newText = `<a href="${urlUpdateLink}" target="_blank">[${pluginName}] Update available: ${pluginVersionCheck} --> ${newVersion}</a><br>`;
 
             if (currentText === 'No plugin settings are available.') {
               pluginSettings.innerHTML = newText;
@@ -96,4 +98,4 @@ function checkUpdate(setupOnly, pluginVersion, pluginName, urlUpdateLink, urlFet
     }
 }
 
-if (CHECK_FOR_UPDATES) checkUpdate(pluginSetupOnlyNotify, pluginVersion, pluginName, pluginHomepageUrl, pluginUpdateUrl);
+if (CHECK_FOR_UPDATES) checkUpdate(pluginSetupOnlyNotify, pluginName, pluginHomepageUrl, pluginUpdateUrl);
