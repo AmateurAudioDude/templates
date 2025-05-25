@@ -1,4 +1,4 @@
-// Use either "const pluginVersion =" or "const plugin_version =" in .js file
+// Use "const pluginVersion =", "const plugin_version =", or "const PLUGIN_VERSION =" in .js file
 // eg: const pluginVersion = "1.0.0"
 
 // Variables
@@ -32,7 +32,7 @@ function checkUpdate(setupOnly, pluginVersion, pluginName, urlUpdateLink, urlFet
             let version;
 
             if (lines.length > 2) {
-                const versionLine = lines.find(line => line.includes("const pluginVersion =") || line.includes("const plugin_version ="));
+                const versionLine = lines.find(line => line.includes("const pluginVersion =") || line.includes("const plugin_version =") || line.includes("const PLUGIN_VERSION ="));
                 if (versionLine) {
                     const match = versionLine.match(/const\s+plugin[_vV]ersion\s*=\s*['"]([^'"]+)['"]/);
                     if (match) {
